@@ -1,7 +1,42 @@
 # http://www.pygame.org/wiki/OBJFileLoader
 from OpenGL.GL import *  # @UnusedWildImport
+import numpy as np
+from OpenGL.GLU import *
 
-OBJ_FOLDER = '/Users/michal/PycharmProjects/rocketGUI/objects/'
+OBJ_FOLDER = 'objects/'
+
+
+def draw_axis():
+    THIKNESS = 0.02
+    glColor3f(1, 0, 0)
+    cyl = gluNewQuadric()
+    cy2 = gluNewQuadric()
+    gluCylinder(cyl, THIKNESS, THIKNESS, 1, 30, 30)
+    glTranslate(0, 0, 1)
+    gluCylinder(cy2, THIKNESS, 0, 0.2, 30, 30)
+    glTranslate(0, 0, -1)
+
+    glColor3f(0, 0, 1)
+    cyl = gluNewQuadric()
+    cy2 = gluNewQuadric()
+    glRotate(-90, 1, 0, 0)
+    gluCylinder(cyl, THIKNESS, THIKNESS, 3, 30, 30)
+    glTranslate(0, 0, 3)
+    gluCylinder(cy2, THIKNESS, 0, 0.2, 30, 30)
+    glTranslate(0, 0, -3)
+    glRotate(90, 1, 0, 0)
+
+    glColor3f(0, 1, 0)
+    cyl = gluNewQuadric()
+    cy2 = gluNewQuadric()
+    glRotate(90, 0, 1, 0)
+    gluCylinder(cyl, THIKNESS, THIKNESS, 1, 30, 30)
+    glTranslate(0, 0, 1)
+    gluCylinder(cy2, THIKNESS, 0, 0.2, 30, 30)
+    glTranslate(0, 0, -1)
+    glRotate(-90, 0, 1, 0)
+    glColor(1,1,1)
+
 
 
 def MTL(filename):

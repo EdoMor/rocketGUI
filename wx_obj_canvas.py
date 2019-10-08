@@ -10,10 +10,11 @@ from OpenGL.GLU import * #@UnusedWildImport
 
 # IMPORT OBJECT LOADER
 from objloader import OBJ
+import objloader as oj
 
 class MyCanvasBase(glcanvas.GLCanvas):
 
-    def __init__(self, parent):
+    def __init__(self, parent, data_file):
 
         glcanvas.GLCanvas.__init__(self, parent, -1)
         self.init = False
@@ -32,7 +33,12 @@ class MyCanvasBase(glcanvas.GLCanvas):
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnScroll)
 
+        self.DATA_FILE = data_file
         self.context = glcanvas.GLContext(self)
+        self.deg = 0
+        self.x=0
+        self.y=0
+        self.z=0
         
     def OnEraseBackground(self, event):
         pass # Do nothing, to avoid flashing on MSW.
@@ -60,7 +66,7 @@ class MyCanvasBase(glcanvas.GLCanvas):
         if not self.init:
             self.InitGL()
             self.init = True
-        self.OnDraw()
+        self.OnDraw(deg = self.deg, x = self.x, y = self.y, z = self.z)
         
     def OnLMouseDown(self, evt):
         self.SetFocus()
@@ -109,7 +115,7 @@ class GL_Canvas(MyCanvasBase):
         glShadeModel(GL_SMOOTH)           # most obj files expect to be smooth-shaded
         
         self.obj = OBJ("12217_rocket_v1_l1.obj", swapyz=True)
-              
+
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
 
@@ -117,7 +123,7 @@ class GL_Canvas(MyCanvasBase):
         glEnable(GL_DEPTH_TEST)
         glMatrixMode(GL_MODELVIEW)
         
-    def load_obj(self, obj_file):  
+    def load_obj(self, obj_file):
         self.obj = OBJ(obj_file, swapyz=True)
         self.Refresh(True)
         
@@ -135,7 +141,10 @@ class GL_Canvas(MyCanvasBase):
         glLightfv(GL_LIGHT0, GL_DIFFUSE,  (v,v,v))
         self.Refresh(True)
         
-    def OnDraw(self):
+    def OnDraw(self,deg=0,x=0,y=0,z=0):
+        X=y
+        Z=x
+        Y=z
         # clear color and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
@@ -148,12 +157,18 @@ class GL_Canvas(MyCanvasBase):
         xScale = 180.0 / w
         yScale = 180.0 / h
         
-        glTranslate(float(self.tx*xScale)/20.0, float(self.ty*yScale)/20.0, self.zpos)
-        glRotatef(float(self.rx*xScale), 0.0, 1.0, 0.0);
-        glRotatef(float(self.ry*yScale), 1.0, 0.0, 0.0);
-        glTranslate(0,-1,0);
-        glScalef(0.003,0.002,0.003);
 
+        glTranslate(float(self.tx*xScale)/20.0, float(self.ty*yScale)/20.0, self.zpos)
+        glRotatef(float(self.rx*xScale), 0.0, 1.0, 0.0)
+        glRotatef(float(self.ry*yScale), 1.0, 0.0, 0.0)
+        glRotate(deg,X,Y,Z)
+        glTranslate(-0.1,-1,0)
+        glScalef(0.003,0.002,0.003)
         glCallList(self.obj.gl_list)
+        glScalef(1/0.003,1/0.002,1/0.003)
+        glTranslate(0.1,0,0)
+        glRotate(-deg,X,Y,Z)
+        oj.draw_axis()
+        glTranslate(0,1,0)
         self.SwapBuffers()
 
