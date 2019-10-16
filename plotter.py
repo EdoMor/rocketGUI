@@ -87,7 +87,7 @@ class live_plot(Plot):
                 self.xs.append(float(x))
                 ys.append(float(y))
         self.ax1.clear()
-        l, = self.ax1.plot(self.xs, ys)
+        self.l, = self.ax1.plot(self.xs, ys)
 
         # axcolor = 'lightgoldenrodyellow'
         # self.axzoom = plt.axes([0.2, 0.02, 0.5, 0.04], facecolor=axcolor)
@@ -114,39 +114,17 @@ class live_plot(Plot):
 
         def update_plot(num):
             if self.is_manual:
-                return l,  # don't change
+                return self.l,  # don't change
 
             # val = (samp.val + scale) % samp.valmax
             # zval = self.szoom.val
             # tval = self.stime.val
             # self.szoom.set_val(zval)
             # self.stime.set_val(tval)
-            animate(0, self.tval, self.zval)
+            self.animate(0, self.tval, self.zval)
             self.is_manual = False  # the above line called update_slider, so we need to reset this
-            return l,
+            return self.l,
 
-        def animate(i, time, zoom):
-            try:
-                graph_data = open(DATA_FILE, 'r').read()
-                lines = graph_data.split('\n')
-                self.xs = []
-                ys = []
-                for line in lines:
-                    if len(line) > 1:
-                        x, y = line.split(',')
-                        self.xs.append(float(x))
-                        ys.append(float(y))
-                self.ax1.clear()
-                self.ax1.plot(self.xs, ys)
-                self.is_manual = False
-
-                try:
-                    self.ax1.set_xlim(time * np.ceil(self.xs[-1]) - zoom, time * np.ceil(self.xs[-1]))
-                except:
-                    pass
-                return l
-            except:
-                pass
 
         def on_click(event):
             # Check where the click happened
@@ -167,6 +145,29 @@ class live_plot(Plot):
         self.ani = animation.FuncAnimation(self.fig, update_plot, interval=interval)
 
         # axes1
+
+    def animate(self, i, time, zoom):
+        try:
+            graph_data = open(self.data_file, 'r').read()
+            lines = graph_data.split('\n')
+            self.xs = []
+            ys = []
+            for line in lines:
+                if len(line) > 1:
+                    x, y = line.split(',')
+                    self.xs.append(float(x))
+                    ys.append(float(y))
+            self.ax1.clear()
+            self.ax1.plot(self.xs, ys)
+            self.is_manual = False
+
+            try:
+                self.ax1.set_xlim(time * np.ceil(self.xs[-1]) - zoom, time * np.ceil(self.xs[-1]))
+            except:
+                pass
+            return self.l
+        except:
+            pass
 
     def OnSliderScrolltime(self, e):
         obj = e.GetEventObject()

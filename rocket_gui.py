@@ -17,10 +17,10 @@ class main_frame(wx.Frame):
         self.mainsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.box_right_sizer = wx.BoxSizer(wx.VERTICAL)
         self.panel1 = plt.live_plot(self, -1, style=wx.SUNKEN_BORDER, data_file='example.txt')
-        self.panel2 = plt.live_plot(self, -1, style=wx.SUNKEN_BORDER, data_file='example.txt')
-        self.panel3 = plt.live_plot(self, -1, style=wx.SUNKEN_BORDER, data_file='example.txt')
+        self.panel2 = plt.live_plot(self, -1, style=wx.SUNKEN_BORDER, data_file='example2.txt')
+        self.panel3 = plt.live_plot(self, -1, style=wx.SUNKEN_BORDER, data_file='example3.txt')
         self.panel4 = glc.GL_Canvas(self, data_file='rexample.txt')
-        self.panel5 = numbers_panel(self, -1, style=wx.SUNKEN_BORDER)
+        self.panel5 = numbers_panel(self, 'examplen.txt', -1, style=wx.SUNKEN_BORDER)
         self.panel6 = wx.Panel(self, -1, style=wx.SUNKEN_BORDER)
         self.panel7 = systems_check_list(self, -1, style=wx.SUNKEN_BORDER)
         self.mainset = 7
@@ -227,18 +227,29 @@ class main_frame(wx.Frame):
         exit(0)
 
     def OnTimer(self, event):
-        deg, x, y, z = [0,0,0,0]
+        deg, x, y, z = [0, 0, 0, 0]
         data_file = self.panel4.DATA_FILE
-        graph_data = open(data_file, 'r').read()
-        lines = graph_data.split('\n')
-        line = lines[-2]
-        if len(line) > 1:
-            deg, x, y, z = line.split(',')
-            deg = int(deg)
-            x = int(x)
-            y = int(y)
-            z = int(z)
+        try:
+            graph_data = open(data_file, 'r').read()
+            lines = graph_data.split('\n')
+            line = lines[-2]
+            if len(line) > 1:
+                deg, x, y, z = line.split(',')
+                deg = int(deg)
+                x = float(x)
+                y = float(y)
+                z = float(z)
+        except:
+            pass
+        self.panel1.animate(0, self.panel1.tval, self.panel1.zval)
+        self.panel2.animate(0, self.panel2.tval, self.panel2.zval)
+        self.panel3.animate(0, self.panel3.tval, self.panel3.zval)
         self.panel4.OnDraw(deg, x, y, z)
+        try:
+            self.panel5.update()
+        except:
+            pass
+
 
 def set_sensor_value(sensor, value):
     pass
